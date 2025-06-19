@@ -12,7 +12,7 @@ from alibabacloud_rds20140815 import models as rds_20140815_models
 from alibabacloud_tea_openapi import models as open_api_models
 from alibabacloud_tea_util import models as util_models
 from alibabacloud_vpc20160428 import models as vpc_20160428_models
-from mcp.server.fastmcp import FastMCP
+from .toolsets import ToolsetManager, ToolsetMCP
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
@@ -26,7 +26,9 @@ from utils import (transform_to_iso_8601,
 
 logger = logging.getLogger(__name__)
 
-mcp = FastMCP("Alibaba Cloud RDS OPENAPI")
+# Use ToolsetMCP to allow grouping tools
+mcp = ToolsetMCP("Alibaba Cloud RDS OPENAPI")
+toolset_manager = mcp.manager
 
 
 class OpenAPIError(Exception):
@@ -1436,6 +1438,9 @@ async def describe_sql_insight_statistic(
 
 
 def main():
+    from .toolsets.toolsets import initialize_toolsets
+
+    initialize_toolsets(os.getenv('MCP_TOOLSETS'))
     mcp.run(transport=os.getenv('SERVER_TRANSPORT', 'stdio'))
 
 
